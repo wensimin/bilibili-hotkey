@@ -6,8 +6,19 @@ let changeDanmu = function(){
 	opens.length==0?$(closeSelection).click():opens.click();
 }
 
+let hotKey = {
+    d : "danmu"
+}
+
+let eventEnum = {
+    danmu : changeDanmu
+}
+
+
 $("html").keypress(function(k){
-	if(k.key==='d'){
-		changeDanmu();
-	}
+    let action = hotKey[k.key];
+    if(action){
+        console.log(eventEnum[action]);
+        eventEnum[action].call();
+    }
 })
