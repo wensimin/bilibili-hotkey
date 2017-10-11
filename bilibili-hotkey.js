@@ -18,7 +18,6 @@ let eventEnum = {
 $("html").keypress(function(k){
     let action = hotKey[k.key];
     if(action){
-        console.log(eventEnum[action]);
         eventEnum[action].call();
     }
 })
