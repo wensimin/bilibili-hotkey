@@ -11,7 +11,6 @@
     <style type="text/css">
       body {
         margin: 10px;
-        white-space: nowrap;
       }
 
       h1 {
@@ -32,13 +31,20 @@
       - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
     -->
     <script src="popup.js"></script>
+    <script src="jquery-3.2.1.min.js"></script>
   </head>
 
   <body>
   <h1>快捷键设置</h1>
-    <div id="container">
-      <span>弹幕快速开关：</span>
-      <input id="danmu"/>
-    </div>
+  <table id="container">
+    <tr>
+      <span>开启/关闭弹幕：</span>
+      <input id="danmu" class="hotKey"/>
+    </tr>
+    <tr>
+      <span>全屏/窗口：</span>
+      <input id="full" class="hotKey"/>
+    </tr>
+  </table>
   </body>
 </html>

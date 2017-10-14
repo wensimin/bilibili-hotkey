@@ -8,63 +8,72 @@
  * @param {function(string)} callback called when the URL of the current tab
  *   is found.
  */
+
+let lastTabId;
+
 function getCurrentTabUrl(callback) {
-  var queryInfo = {
+    let queryInfo = {
     active: true,
     currentWindow: true
   };
 
   chrome.tabs.query(queryInfo, (tabs) => {
-    var tab = tabs[0];
-    var url = tab.url;
-    console.assert(typeof url == 'string', 'tab.url should be a string');
+      let tab = tabs[0];
+      let url = tab.url;
+      lastTabId = tab.id;
     callback(url);
   });
 }
 
 function changeHotKey(config){
-      let script = "hotKey = "+ JSON.stringify(config);
-      chrome.tabs.executeScript({
-        code: script
-      });
+    chrome.tabs.sendMessage(lastTabId, config);
 }
 
 function showConfig(config){
-    var danmu = document.getElementById('danmu');
-    for(var index in config) {
-       if (config.hasOwnProperty(index)) {
-           var attr = config[index];
-           if(attr==='danmu'){
-                danmu.value=index;
-                return;
-           }
-       }
-    }
+    $(".hotKey").each((i, e) => {
+        e.value = config[e.id] ? config[e.id] : "空";
+    });
+}
+
+function saveConfig(config) {
+    chrome.storage.sync.clear();
+    chrome.storage.sync.set(config);
 }
 
 // 默认配置
-let hotKey = {
-    d : "danmu"
+let defaultHotKey = {
+    d: "danmu",
+    danmu: "d",
+    f: "full",
+    full: "f"
 }
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  getCurrentTabUrl((url) => {
-      var danmu = document.getElementById('danmu');
+  getCurrentTabUrl(() => {
       chrome.storage.sync.get(null, (config) => {
             if (Object.getOwnPropertyNames(config).length > 0){
-                hotKey = config;
+                defaultHotKey = config;
             }
-            changeHotKey(hotKey);
-            showConfig(hotKey)
+          changeHotKey(defaultHotKey);
+          showConfig(defaultHotKey)
       });
-      danmu.addEventListener('change', () => {
-        let key = danmu.value
-        let config = {};
-        config[key]="danmu";
-        changeHotKey(config);
-        chrome.storage.sync.clear();
-        chrome.storage.sync.set(config);
+
+      $(".hotKey").change((e) => {
+          let input = $(e.target);
+          let action = input.first().prop("id");
+          let key = input.first().val();
+          let oldKey = defaultHotKey[action];
+          let oldAction = defaultHotKey[key];
+          delete defaultHotKey[oldAction];
+          delete defaultHotKey[oldKey];
+          delete defaultHotKey[action];
+          delete defaultHotKey[key];
+          defaultHotKey[action] = key;
+          defaultHotKey[key] = action;
+          changeHotKey(defaultHotKey);
+          saveConfig(defaultHotKey);
+          showConfig(defaultHotKey)
       });
   });
 });
