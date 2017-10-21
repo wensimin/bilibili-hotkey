@@ -6,7 +6,7 @@
   "version": "1.0",
   "content_scripts": [
     {
-      "matches": ["*://www.bilibili.com/video/*"],
+      "matches": ["*://*.bilibili.com/*"],
       "js": ["jquery-3.2.1.min.js","bilibili-hotkey.js"],
       "run_at": "document_end"
     }
